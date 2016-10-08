@@ -1,5 +1,5 @@
 ---
-# tasks file for opdk-baas-onboarding
+# tasks file for apigee-opdk-baas-onboarding
 #- name: Create Baas org and user
 #  expect:
 #    command: 'python {{ apigee_installation_home }}/baas-usergrid/bin/create_org_and_user.py -o {{ org_name }} -a {{ baas_admin_name }} -p {{ baas_admin_pass }}'
