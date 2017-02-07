@@ -1,18 +1,8 @@
 ---
-# tasks file for apigee-opdk-baas-onboarding
-#- name: Create Baas org and user
-#  expect:
-#    command: 'python {{ apigee_installation_home }}/baas-usergrid/bin/create_org_and_user.py -o {{ org_name }} -a {{ baas_admin_name }} -p {{ baas_admin_pass }}'
-#    responses:
-#      (?i)username for authentication: '{{ baas_superuser_name }}'
-#      (?i)password for authentication: '{{ baas_superuser_pass }}'
-#  register: result
-#  ignore_errors: true
-
 - name: Retrieve access token for superuser - {{ baas_superuser_name }}
   delegate_to: '{{ public_address }}'
   uri:
-    url: '{{ endpoint }}/management/token'
+    url: '{{ public_mgmt_ip }}/management/token'
     method: POST
     timeout: 180
     body_format: json
@@ -29,7 +19,7 @@
 - name: Create organization - {{ org_name }}
   delegate_to: '{{ public_address }}'
   uri:
-    url: '{{ endpoint }}/management/organizations'
+    url: '{{ public_mgmt_ip }}/management/organizations'
     method: POST
     timeout: 180
     body_format: json
@@ -45,7 +35,7 @@
 - name: Activate and confirm user - {{ baas_admin_name }}
   delegate_to: '{{ public_address }}'
   uri:
-    url: '{{ endpoint }}/management/users/{{ baas_admin_name }}'
+    url: '{{ public_mgmt_ip }}/management/users/{{ baas_admin_name }}'
     timeout: 180
     method: PUT
     body_format: json
