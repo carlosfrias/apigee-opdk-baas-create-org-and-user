@@ -1,7 +1,11 @@
 ---
+- name: Retrieve ip address of first baas node
+  set_fact:
+    baas_mgmt_ip: "{{ hostvars[group['baas'][0] }}"
+
 - name: Retrieve access token for superuser - {{ baas_superuser_name }}
   uri:
-    url: 'http://{{ public_mgmt_ip }}:{{ ms_ext_mgmt_port }}/management/token'
+    url: "http://{{ baas_mgmt_ip }}:{{ ms_ext_mgmt_port }}/management/token"
     method: POST
     timeout: 180
     body_format: json
@@ -17,7 +21,7 @@
 
 - name: Create organization - {{ org_name }}
   uri:
-    url: 'http://{{ public_mgmt_ip }}:{{ ms_ext_mgmt_port }}/management/organizations'
+    url: 'http://{{ baas_mgmt_ip }}:{{ ms_ext_mgmt_port }}/management/organizations'
     method: POST
     timeout: 180
     body_format: json
@@ -32,7 +36,7 @@
 
 - name: Activate and confirm user - {{ baas_admin_name }}
   uri:
-    url: 'http://{{ public_mgmt_ip }}:{{ ms_ext_mgmt_port }}/management/users/{{ baas_admin_name }}'
+    url: 'http://{{ baas_mgmt_ip }}:{{ ms_ext_mgmt_port }}/management/users/{{ baas_admin_name }}'
     timeout: 180
     method: PUT
     body_format: json
