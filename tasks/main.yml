@@ -1,7 +1,7 @@
 ---
 - name: Retrieve ip address of first baas node
   set_fact:
-    baas_mgmt_ip: "{{ hostvars[groups['baas'][0]] }}"
+    baas_mgmt_ip: "{{ groups['baas'][0] }}"
 
 - name: Retrieve access token for superuser - {{ baas_superuser_name }}
   uri:
