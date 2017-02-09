@@ -50,6 +50,3 @@
     HEADER_Authorization: 'Bearer {{ access_token }}'
   register: user_response
 
-#- name: Create org and user
-#  shell: "python {{ baas_create_org_and_user_script }} -o {{ org_name }} -a {{ baas_admin_name }} -p {{ baas_admin_pass }}"
-
