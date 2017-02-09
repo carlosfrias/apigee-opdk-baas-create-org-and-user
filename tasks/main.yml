@@ -1,50 +1,55 @@
 ---
-#- name: Retrieve ip address of first baas node
-#  set_fact:
+- name: Retrieve ip address of first baas node
+  set_fact:
+    baas_mgmt_ip: "127.0.0.1"
 #    baas_mgmt_ip: "{{ groups['baas'][0] }}"
-#
-#- name: Retrieve access token for superuser - {{ baas_superuser_name }}
-#  uri:
-#    url: "http://{{ baas_mgmt_ip }}:{{ ms_ext_mgmt_port }}/management/token"
-#    method: POST
-#    timeout: 180
-#    body_format: json
-#    body:
-#      username: '{{ baas_superuser_name }}'
-#      password: '{{ baas_superuser_pass }}'
-#      grant_type: 'password'
-#  register: token_response
-#
-#- name: Set superuser access token
-#  set_fact:
-#    access_token: '{{ token_response.json.access_token }}'
-#
-#- name: Create organization - {{ org_name }}
-#  uri:
-#    url: 'http://{{ baas_mgmt_ip }}:{{ ms_ext_mgmt_port }}/management/organizations'
-#    method: POST
-#    timeout: 180
-#    body_format: json
-#    body:
-#      organization: '{{ org_name }}'
-#      username: '{{ baas_admin_name }}'
-#      name: '{{ baas_admin_name }}'
-#      email: '{{ baas_admin_email }}'
-#      password: '{{ baas_admin_pass }}'
-#    HEADER_Authorization: 'Bearer {{ access_token }}'
-#  register: org_response
-#
-#- name: Activate and confirm user - {{ baas_admin_name }}
-#  uri:
-#    url: 'http://{{ baas_mgmt_ip }}:{{ ms_ext_mgmt_port }}/management/users/{{ baas_admin_name }}'
-#    timeout: 180
-#    method: PUT
-#    body_format: json
-#    body:
-#      activated: True
-#      confirmed: True
-#    HEADER_Authorization: 'Bearer {{ access_token }}'
-#  register: user_response
 
-- name: Create org and user
-  shell: "python {{ baas_create_org_and_user_script }} -o {{ org_name }} -a {{ baas_admin_email }} -p {{ baas_admin_pass }}"
+- name: Retrieve access token for superuser - {{ baas_superuser_name }}
+  delegate_to: '{{ inventory_hostname }}'
+  uri:
+    url: "http://{{ baas_mgmt_ip }}:{{ ms_ext_mgmt_port }}/management/token"
+    method: POST
+    timeout: 180
+    body_format: json
+    body:
+      username: '{{ baas_superuser_name }}'
+      password: '{{ baas_superuser_pass }}'
+      grant_type: 'password'
+  register: token_response
+
+- name: Set superuser access token
+  set_fact:
+    access_token: '{{ token_response.json.access_token }}'
+
+- name: Create organization - {{ org_name }}
+  delegate_to: '{{ inventory_hostname }}'
+  uri:
+    url: 'http://{{ baas_mgmt_ip }}:{{ ms_ext_mgmt_port }}/management/organizations'
+    method: POST
+    timeout: 180
+    body_format: json
+    body:
+      organization: '{{ org_name }}'
+      username: '{{ baas_admin_name }}'
+      name: '{{ baas_admin_name }}'
+      email: '{{ baas_admin_email }}'
+      password: '{{ baas_admin_pass }}'
+    HEADER_Authorization: 'Bearer {{ access_token }}'
+  register: org_response
+
+- name: Activate and confirm user - {{ baas_admin_name }}
+  delegate_to: '{{ inventory_hostname }}'
+  uri:
+    url: 'http://{{ baas_mgmt_ip }}:{{ ms_ext_mgmt_port }}/management/users/{{ baas_admin_name }}'
+    timeout: 180
+    method: PUT
+    body_format: json
+    body:
+      activated: True
+      confirmed: True
+    HEADER_Authorization: 'Bearer {{ access_token }}'
+  register: user_response
+
+#- name: Create org and user
+#  shell: "python {{ baas_create_org_and_user_script }} -o {{ org_name }} -a {{ baas_admin_name }} -p {{ baas_admin_pass }}"
+
